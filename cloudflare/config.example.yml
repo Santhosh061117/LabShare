@@ -1,0 +1,24 @@
+# Cloudflare Named Tunnel Configuration for LabShare
+# Rename this file to config.yml after completing setup
+
+# Replace with your Cloudflare Tunnel UUID (from: cloudflared tunnel create labshare)
+tunnel: 00000000-0000-0000-0000-000000000000
+
+# Path to the tunnel credentials file
+# On Termux: /data/data/com.termux/files/home/.cloudflared/<UUID>.json
+# On Linux: /home/<user>/.cloudflared/<UUID>.json
+credentials-file: /data/data/com.termux/files/home/.cloudflared/00000000-0000-0000-0000-000000000000.json
+
+# Ingress Rules
+# Cloudflare automatically provides SSL, HTTP/2, and full WebSocket proxying
+ingress:
+  # Replace with your custom domain or subdomain
+  - hostname: lab.yourdomain.com
+    service: http://localhost:3000
+    originRequest:
+      noTLSVerify: false
+      connectTimeout: 30s
+      http2Origin: false
+
+  # Catch-all rule (required by cloudflared)
+  - service: http_status:404
