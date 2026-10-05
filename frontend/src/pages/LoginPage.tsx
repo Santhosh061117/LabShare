@@ -79,10 +79,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
             <Lock className="w-6 h-6" />
           </div>
           <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 mt-2 m-0">
-            {mode === 'signin' ? 'Sign In to LabShare' : 'Create Lab Account'}
+            {mode === 'signin' ? 'Sign In to Files Sync' : 'Create Account'}
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Persistent lab sessions with trusted device tokens
+            Persistent academic & laboratory workspace access
           </p>
         </div>
 
@@ -116,7 +116,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Username
+              Username / Student ID
             </label>
             <div className="relative">
               <UserIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -125,7 +125,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="e.g. santhosh"
+                placeholder="e.g. roll_no or username"
                 className="w-full pl-9 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -134,7 +134,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
           {mode === 'register' && (
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Display Name (Your Real Name / Lab ID)
+                Display Name (Real Name / Desk ID)
               </label>
               <div className="relative">
                 <Sparkles className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -143,7 +143,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
                   required
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder="e.g. Santhosh R"
+                  placeholder="e.g. Alex Morgan / Lab Desk 04"
                   className="w-full pl-9 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -177,7 +177,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
                 type="text"
                 value={deviceName}
                 onChange={(e) => setDeviceName(e.target.value)}
-                placeholder="e.g. Lab PC #12 or Personal Phone"
+                placeholder="e.g. Workstation 12 or Personal Laptop"
                 className="w-full pl-9 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -196,7 +196,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
               <strong className="text-blue-900 dark:text-blue-200 flex items-center gap-1">
                 <ShieldCheck className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" /> Trust this device
               </strong>
-              Keep me signed in for 6 months so I don't have to type my credentials repeatedly during college labs.
+              Keep me signed in for 6 months so I don't have to type credentials repeatedly during laboratory work.
             </label>
           </div>
 
@@ -213,7 +213,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
             className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center justify-center gap-1.5 mx-auto font-medium"
           >
             <QrCode className="w-4 h-4" />
-            Fast Lab Login: Pair This PC with Mobile QR
+            Fast Authentication: Pair Workstation with Mobile QR
           </button>
         </div>
       </Card>

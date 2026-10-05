@@ -1,5 +1,5 @@
-// LabShare Service Worker - Cache App Shell for PWA
-const CACHE_NAME = 'labshare-shell-v1';
+// Files Sync Service Worker - Cache App Shell for PWA
+const CACHE_NAME = 'filessync-shell-v2';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

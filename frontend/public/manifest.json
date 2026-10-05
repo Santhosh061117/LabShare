@@ -1,7 +1,7 @@
 {
-  "name": "LabShare - Self-Hosted Lab Communication & File Sharing",
-  "short_name": "LabShare",
-  "description": "Fast, private lab file sharing and real-time messaging hosted on Android Termux",
+  "name": "Files Sync — Official File Exchange & Collaboration",
+  "short_name": "Files Sync",
+  "description": "High-performance institutional file sharing, code synchronization, and real-time collaboration gateway",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

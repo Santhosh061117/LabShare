@@ -55,7 +55,7 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen
     setIsTesting(false);
 
     if (ok) {
-      setTestResult({ success: true, message: 'Successfully connected to Termux backend!' });
+      setTestResult({ success: true, message: 'Successfully connected to Files Sync service gateway!' });
       success('Connected to backend server!');
       setTimeout(() => {
         onClose();
@@ -63,7 +63,7 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen
     } else {
       setTestResult({
         success: false,
-        message: 'Could not reach server at this URL. Make sure Termux ./start.sh is running.'
+        message: 'Could not reach server at this URL. Make sure the Files Sync service is running.'
       });
       error('Failed to connect to specified backend.');
     }
@@ -79,11 +79,11 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Backend Server Connection">
+    <Modal isOpen={isOpen} onClose={onClose} title="Files Sync Gateway Connection">
       <form onSubmit={handleTestAndSave} className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-            Backend API / Cloudflare Named Tunnel URL
+            Service Gateway API / Ingress URL
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -93,7 +93,7 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen
               type="text"
               value={urlInput}
               onChange={(e) => setUrlInput(e.target.value)}
-              placeholder="e.g. https://lab.yourdomain.com or http://localhost:3000"
+              placeholder="e.g. https://sync.yourdomain.com or http://localhost:3000"
               className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
             />
           </div>
@@ -103,9 +103,9 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen
             <div className="mt-2.5 p-2.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-300/80 dark:border-amber-800/60 rounded-xl text-xs text-amber-800 dark:text-amber-300 flex items-start gap-2">
               <AlertTriangle className="w-4 h-4 shrink-0 text-amber-600 mt-0.5" />
               <div>
-                <p className="font-semibold">Mixed Content Warning:</p>
+                <p className="font-semibold">Mixed Content Security Warning:</p>
                 <p>
-                  You are viewing LabShare over <strong>HTTPS</strong>. Browsers block insecure <code>http://</code> URLs. For mobile phones and other devices, use your Cloudflare <strong>HTTPS Named Tunnel</strong> (e.g. <code>https://lab.yourdomain.com</code>).
+                  You are viewing Files Sync over <strong>HTTPS</strong>. Browsers block insecure <code>http://</code> URLs. For mobile phones and other devices, use your Cloudflare <strong>HTTPS Named Tunnel</strong> (e.g. <code>https://sync.yourdomain.com</code>).
                 </p>
               </div>
             </div>
@@ -119,7 +119,7 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen
               • <code>localhost</code> only points to the host device itself.
             </p>
             <p>
-              • For other devices, enter your Cloudflare HTTPS Tunnel URL (e.g. <code>https://lab.yourdomain.com</code>).
+              • For other devices, enter your HTTPS Gateway Tunnel URL (e.g. <code>https://sync.yourdomain.com</code>).
             </p>
           </div>
         </div>
@@ -161,7 +161,7 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen
             {showShareQr && (
               <div className="mt-3 p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 text-center space-y-2">
                 <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Scan this QR code with any phone camera to instantly connect that phone to your Termux backend:
+                  Scan this QR code with any mobile device to connect directly to the Files Sync gateway:
                 </p>
                 {shareQrDataUrl && (
                   <div className="inline-block p-3 bg-white rounded-xl shadow-sm border border-slate-200">

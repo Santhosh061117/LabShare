@@ -53,7 +53,7 @@ export const ClipboardDrawer: React.FC<ClipboardDrawerProps> = ({
         <div className="p-2.5 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 rounded-xl text-xs text-blue-800 dark:text-blue-300 flex items-center gap-2">
           <ShieldAlert className="w-4 h-4 shrink-0 text-blue-600" />
           <span>
-            LabShare never secretly accesses your clipboard. Paste snippets below to share with your lab mates.
+            Files Sync never silently accesses your device clipboard. Paste snippets below to share with collaborators.
           </span>
         </div>
 

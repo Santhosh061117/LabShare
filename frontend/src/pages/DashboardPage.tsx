@@ -69,13 +69,13 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-700 text-white p-6 sm:p-8 shadow-xl shadow-blue-500/10">
         <div className="relative z-10 max-w-2xl space-y-2">
           <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md">
-            College & Lab Sharing Platform
+            Institutional File Exchange & Collaboration
           </span>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white m-0">
-            {isAuthenticated ? `Welcome back, ${user?.displayName}!` : 'Welcome to LabShare'}
+            {isAuthenticated ? `Welcome back, ${user?.displayName}!` : 'Welcome to Files Sync'}
           </h1>
           <p className="text-sm sm:text-base text-blue-100/90 max-w-xl">
-            High-speed real-time messaging, code snippet syncing, and large file transfers hosted locally on Android Termux.
+            High-speed real-time messaging, instant code snippet syncing, and secure multi-gigabyte file transfers.
           </p>
 
           <div className="flex flex-wrap items-center gap-2.5 pt-3">
@@ -127,7 +127,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
         <Card className="p-4" hoverEffect>
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-              Termux Backend
+              Service Gateway
             </span>
             <div className={`w-2.5 h-2.5 rounded-full ${isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`} />
           </div>

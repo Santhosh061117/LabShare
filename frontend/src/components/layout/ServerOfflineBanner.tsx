@@ -18,15 +18,12 @@ export const ServerOfflineBanner: React.FC = () => {
             <AlertTriangle className="w-5 h-5 shrink-0 text-amber-200 animate-bounce" />
             <div>
               <span>
-                <strong>Termux server is offline.</strong> Start LabShare in Termux.
+                <strong>Service Gateway Offline.</strong> Unable to reach the Files Sync host node.
               </span>
               <span className="hidden lg:inline text-rose-100 text-xs ml-2">
-                (On another device or phone? Set your Cloudflare HTTPS Tunnel in <strong>Server URL</strong>)
+                (Accessing from another device? Configure your HTTPS Gateway in <strong>Gateway Settings</strong>)
               </span>
             </div>
-            <span className="hidden md:inline-block text-rose-100 text-xs bg-rose-700/60 px-2 py-0.5 rounded font-mono shrink-0">
-              ./start.sh
-            </span>
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
@@ -47,7 +44,7 @@ export const ServerOfflineBanner: React.FC = () => {
               onClick={() => setShowSettings(true)}
               icon={<Settings className="w-3.5 h-3.5" />}
             >
-              Server URL
+              Gateway Settings
             </Button>
           </div>
         </div>

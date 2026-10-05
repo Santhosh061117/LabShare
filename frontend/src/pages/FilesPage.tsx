@@ -81,7 +81,7 @@ export const FilesPage: React.FC<FilesPageProps> = ({ roomId }) => {
             </span>
           </div>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Stream large videos, preview C/Python/Verilog code, and download course assets stored on Termux.
+            Stream high-definition media, preview code files, and download course assets stored on the secure gateway.
           </p>
         </div>
 

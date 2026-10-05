@@ -34,7 +34,7 @@ export const StatusBadge: React.FC<{
     return (
       <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
         <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-        Online {pingMs ? `(${pingMs}ms)` : ''}
+        Gateway Online {pingMs ? `(${pingMs}ms)` : ''}
       </span>
     );
   }
@@ -42,7 +42,7 @@ export const StatusBadge: React.FC<{
   return (
     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
       <span className="w-2 h-2 rounded-full bg-rose-500" />
-      Termux Offline
+      Gateway Offline
     </span>
   );
 };

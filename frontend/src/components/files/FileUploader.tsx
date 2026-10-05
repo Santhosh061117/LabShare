@@ -81,7 +81,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
           Supports Images, Videos, Audio, PDFs, ZIP, C/C++, Java, Python, Verilog & Quartus projects
         </p>
         <p className="text-[11px] text-blue-600 dark:text-blue-400 mt-2 font-medium">
-          Fast resumable chunk streaming — Large files supported without crashing Termux memory!
+          Fast resumable chunk streaming — Large files supported with low memory overhead.
         </p>
       </div>
 

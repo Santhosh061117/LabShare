@@ -62,12 +62,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
         })}
       </div>
 
-      {/* Termux System Card */}
+      {/* Files Sync Gateway Card */}
       <div className="mt-auto pt-4 border-t border-slate-200 dark:border-slate-800">
         <div className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200/80 dark:border-slate-700/60 text-xs">
-          <p className="font-semibold text-slate-800 dark:text-slate-200">Termux Backend</p>
+          <p className="font-semibold text-slate-800 dark:text-slate-200">Files Sync Gateway</p>
           <p className="text-slate-500 dark:text-slate-400 text-[11px] mt-0.5">
-            Android local SQLite + Cloudflare Named Tunnel
+            High-Performance Local Storage + Secure HTTPS Gateway
           </p>
         </div>
       </div>

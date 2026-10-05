@@ -302,7 +302,7 @@ export const RoomChatPage: React.FC<RoomChatPageProps> = ({ roomId, onNavigate }
               )}
             </div>
             <p className="text-xs text-slate-400 truncate">
-              {room.description || 'College Lab Collaborative Chat & Code Sharing'}
+              {room.description || 'Institutional Lab Workspace & Code Sharing'}
             </p>
           </div>
         </div>

@@ -68,7 +68,7 @@ export const StoragePage: React.FC = () => {
             Storage Manager
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Monitor Termux local storage usage, inspect largest files, and run cleanup jobs.
+            Monitor server storage utilization, inspect largest files, and run cleanup jobs.
           </p>
         </div>
 
@@ -100,7 +100,7 @@ export const StoragePage: React.FC = () => {
           <p className="text-2xl font-bold text-slate-900 dark:text-slate-100 mt-1">
             {formatBytes(stats?.totalBytes || 0)}
           </p>
-          <p className="text-xs text-slate-400 mt-1">Stored safely on Android Termux</p>
+          <p className="text-xs text-slate-400 mt-1">Stored securely on local storage partition</p>
         </Card>
 
         <Card className="p-5">
