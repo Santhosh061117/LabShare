@@ -1,15 +1,44 @@
 export function getApiBaseUrl(): string {
+  // 1. Check if backend URL is provided in URL query parameters (e.g. ?server=https://my-tunnel.domain.com)
+  if (typeof window !== 'undefined') {
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const serverParam = urlParams.get('server');
+      if (serverParam && serverParam.trim()) {
+        const clean = serverParam.trim().replace(/\/+$/, '');
+        localStorage.setItem('labshare_api_url', clean);
+        return clean;
+      }
+
+      // Check hash parameters if present (e.g. #/?server=https://...)
+      if (window.location.hash.includes('?')) {
+        const hashQuery = window.location.hash.split('?')[1];
+        const hashParams = new URLSearchParams(hashQuery);
+        const hashServer = hashParams.get('server');
+        if (hashServer && hashServer.trim()) {
+          const clean = hashServer.trim().replace(/\/+$/, '');
+          localStorage.setItem('labshare_api_url', clean);
+          return clean;
+        }
+      }
+    } catch {
+      // Ignore URL parsing errors
+    }
+  }
+
+  // 2. Check saved URL in localStorage
   const saved = localStorage.getItem('labshare_api_url');
   if (saved && saved.trim()) {
     return saved.trim().replace(/\/+$/, '');
   }
 
+  // 3. Check build-time environment variable
   const envUrl = import.meta.env.VITE_API_URL;
   if (envUrl && envUrl.trim()) {
     return envUrl.trim().replace(/\/+$/, '');
   }
 
-  // If running in development with Vite proxy or hosted alongside backend
+  // 4. Default to localhost if testing on same machine
   if (typeof window !== 'undefined') {
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
       return 'http://localhost:3000';

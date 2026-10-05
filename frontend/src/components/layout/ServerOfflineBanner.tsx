@@ -16,10 +16,15 @@ export const ServerOfflineBanner: React.FC = () => {
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-sm">
           <div className="flex items-center gap-2.5 font-medium">
             <AlertTriangle className="w-5 h-5 shrink-0 text-amber-200 animate-bounce" />
-            <span>
-              <strong>Termux server is offline.</strong> Start LabShare in Termux.
-            </span>
-            <span className="hidden md:inline-block text-rose-100 text-xs bg-rose-700/60 px-2 py-0.5 rounded font-mono">
+            <div>
+              <span>
+                <strong>Termux server is offline.</strong> Start LabShare in Termux.
+              </span>
+              <span className="hidden lg:inline text-rose-100 text-xs ml-2">
+                (On another device or phone? Set your Cloudflare HTTPS Tunnel in <strong>Server URL</strong>)
+              </span>
+            </div>
+            <span className="hidden md:inline-block text-rose-100 text-xs bg-rose-700/60 px-2 py-0.5 rounded font-mono shrink-0">
               ./start.sh
             </span>
           </div>

@@ -12,20 +12,26 @@ import {
   UploadCloud, 
   FileText, 
   Sparkles, 
-  Share2, 
-  RefreshCw 
+  X,
+  Loader2,
+  CheckCircle2,
+  AlertCircle
 } from 'lucide-react';
-import { api } from '../services/api';
+import { api, getApiBaseUrl } from '../services/api';
 import { wsManager } from '../services/ws';
 import { useToast } from '../context/ToastContext';
 import { useFileUpload } from '../hooks/useFileUpload';
 import { Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
-import { FileRecord, ClipboardItem } from '../types';
+import type { FileRecord, ClipboardItem } from '../types';
 
-export const QuickTransferPage: React.FC = () => {
+interface QuickTransferPageProps {
+  initialCode?: string;
+}
+
+export const QuickTransferPage: React.FC<QuickTransferPageProps> = ({ initialCode }) => {
   const { success, error, info } = useToast();
-  const { uploadFile, uploads, cancelUpload } = useFileUpload();
+  const { uploadFile, uploads, cancelUpload, clearCompleted } = useFileUpload();
 
   // Session state
   const [activeSession, setActiveSession] = useState<{ id: string; code: string; expiresAt: number } | null>(null);
@@ -43,7 +49,29 @@ export const QuickTransferPage: React.FC = () => {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Countdown timer for 2h session expiry
+  // Auto-join if initialCode is provided via URL parameter
+  useEffect(() => {
+    if (initialCode && !activeSession) {
+      setJoinCodeInput(initialCode);
+      const clean = initialCode.trim().toUpperCase();
+      api.getQuickTransfer(clean)
+        .then(async (res) => {
+          setActiveSession(res.room);
+          setTransferredFiles(res.files || []);
+          setClipboardItems(res.clipboard || []);
+          const origin = window.location.origin;
+          const pathname = window.location.pathname;
+          const server = getApiBaseUrl();
+          const shareUrl = `${origin}${pathname}?quick=${res.room.code}&server=${encodeURIComponent(server)}`;
+          const qr = await QRCode.toDataURL(shareUrl, { width: 260, margin: 2 });
+          setSessionQrUrl(qr);
+          success(`Connected to Quick Transfer session: ${clean}`);
+        })
+        .catch(() => {});
+    }
+  }, [initialCode]);
+
+  // Countdown timer for session expiry
   useEffect(() => {
     if (!activeSession) return;
 
@@ -90,6 +118,14 @@ export const QuickTransferPage: React.FC = () => {
     };
   }, [activeSession, info]);
 
+  // Helper to generate full connect URL for seamless mobile camera scanning
+  const generateShareUrl = (code: string) => {
+    const origin = window.location.origin;
+    const pathname = window.location.pathname;
+    const server = getApiBaseUrl();
+    return `${origin}${pathname}?quick=${code}&server=${encodeURIComponent(server)}`;
+  };
+
   // Create Quick Session
   const handleCreateSession = async () => {
     setIsCreating(true);
@@ -98,14 +134,14 @@ export const QuickTransferPage: React.FC = () => {
       const s = res.room;
       setActiveSession(s);
 
-      const qr = await QRCode.toDataURL(s.code, {
+      const shareUrl = generateShareUrl(s.code);
+      const qr = await QRCode.toDataURL(shareUrl, {
         width: 260,
         margin: 2,
         color: { dark: '#0f172a', light: '#ffffff' }
       });
       setSessionQrUrl(qr);
 
-      // Load initial files & clipboard
       const data = await api.getQuickTransfer(s.code);
       setTransferredFiles(data.files || []);
       setClipboardItems(data.clipboard || []);
@@ -132,7 +168,8 @@ export const QuickTransferPage: React.FC = () => {
       setTransferredFiles(res.files || []);
       setClipboardItems(res.clipboard || []);
 
-      const qr = await QRCode.toDataURL(res.room.code, {
+      const shareUrl = generateShareUrl(res.room.code);
+      const qr = await QRCode.toDataURL(shareUrl, {
         width: 260,
         margin: 2
       });
@@ -195,7 +232,7 @@ export const QuickTransferPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto animate-in fade-in duration-200">
+    <div className="space-y-6 max-w-5xl mx-auto animate-fade-in">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -363,6 +400,70 @@ export const QuickTransferPage: React.FC = () => {
               Images, videos, PDFs, code, Quartus/FPGA archives. Uploaded with chunk streaming!
             </p>
           </div>
+
+          {/* Upload Progress Queue */}
+          {uploads.length > 0 && (
+            <Card className="p-4 space-y-3">
+              <div className="flex items-center justify-between text-xs font-semibold text-slate-700 dark:text-slate-300 border-b border-slate-100 dark:border-slate-800 pb-2">
+                <span>Transfer Progress ({uploads.length})</span>
+                <button
+                  onClick={clearCompleted}
+                  className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                >
+                  Clear Finished
+                </button>
+              </div>
+
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {uploads.map((u) => (
+                  <div
+                    key={u.file.name}
+                    className="p-2.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-100 dark:border-slate-800 text-xs space-y-1.5"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-medium text-slate-800 dark:text-slate-200 truncate flex-1">
+                        {u.file.name}
+                      </span>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="text-slate-400">
+                          {formatSize(u.uploadedBytes)} / {formatSize(u.totalBytes)} ({u.progress}%)
+                        </span>
+                        {u.status === 'completed' && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
+                        {u.status === 'error' && <AlertCircle className="w-4 h-4 text-rose-500" />}
+                        {u.status === 'assembling' && (
+                          <span className="text-blue-600 flex items-center gap-1 text-[11px]">
+                            <Loader2 className="w-3 h-3 animate-spin" /> Finalizing...
+                          </span>
+                        )}
+                        {u.status === 'uploading' && (
+                          <button
+                            onClick={() => cancelUpload(u.file.name)}
+                            className="p-0.5 text-slate-400 hover:text-rose-600 rounded"
+                            title="Cancel"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full transition-all duration-150 ${
+                          u.status === 'completed'
+                            ? 'bg-emerald-500'
+                            : u.status === 'error'
+                            ? 'bg-rose-500'
+                            : 'bg-blue-600'
+                        }`}
+                        style={{ width: `${u.progress}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          )}
 
           {/* Quick Clipboard Send Box */}
           <Card className="p-4 sm:p-5">

@@ -39,6 +39,8 @@ backend/data/
 # Cloudflare Credentials & Named Tunnel Keys
 cloudflare/config.yml
 cloudflare/*.json
+cloudflare/cloudflared*
+*.exe
 *.pem
 *.key
 *.cert

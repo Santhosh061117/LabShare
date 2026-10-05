@@ -28,6 +28,12 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
   const [requiresPassword, setRequiresPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  React.useEffect(() => {
+    if (initialCode) {
+      setCode(initialCode);
+    }
+  }, [initialCode]);
+
   const handleJoin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!code.trim()) {
@@ -46,8 +52,9 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
 
     setIsLoading(true);
     try {
+      const cleanCode = code.trim().toUpperCase().replace(/\s+/g, '-');
       const res = await api.joinRoom({
-        code: code.trim(),
+        code: cleanCode,
         password: password.trim() || undefined,
         guestName: !isAuthenticated ? guestName.trim() : undefined
       });

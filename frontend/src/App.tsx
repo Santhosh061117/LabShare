@@ -19,16 +19,41 @@ export const AppContent: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<string>('dashboard');
   const [pageParams, setPageParams] = useState<any>({});
 
-  // Sync hash routing for GitHub Pages
+  // Sync hash routing & URL parameters for GitHub Pages
   useEffect(() => {
     const handleHashChange = () => {
-      const hash = window.location.hash.replace(/^#\/?/, '');
-      if (hash.startsWith('room/')) {
-        const roomId = hash.replace('room/', '');
+      // Check query params in window.location.search and hash
+      const urlParams = new URLSearchParams(window.location.search);
+      const quickParam = urlParams.get('quick');
+      const roomParam = urlParams.get('room');
+
+      let hashParamString = '';
+      if (window.location.hash.includes('?')) {
+        hashParamString = window.location.hash.split('?')[1];
+      }
+      const hashParams = new URLSearchParams(hashParamString);
+      const activeQuick = quickParam || hashParams.get('quick');
+      const activeRoom = roomParam || hashParams.get('room');
+
+      if (activeQuick) {
+        setCurrentPage('quick-transfer');
+        setPageParams({ code: activeQuick });
+        return;
+      }
+
+      if (activeRoom) {
+        setCurrentPage('rooms');
+        setPageParams({ joinCode: activeRoom });
+        return;
+      }
+
+      const cleanHash = window.location.hash.split('?')[0].replace(/^#\/?/, '');
+      if (cleanHash.startsWith('room/')) {
+        const roomId = cleanHash.replace('room/', '');
         setCurrentPage('room-chat');
         setPageParams({ roomId });
-      } else if (hash) {
-        setCurrentPage(hash);
+      } else if (cleanHash) {
+        setCurrentPage(cleanHash);
       } else {
         setCurrentPage('dashboard');
       }
@@ -58,11 +83,11 @@ export const AppContent: React.FC = () => {
       case 'dashboard':
         return <DashboardPage onNavigate={handleNavigate} />;
       case 'rooms':
-        return <RoomsPage onNavigate={handleNavigate} />;
+        return <RoomsPage onNavigate={handleNavigate} initialJoinCode={pageParams?.joinCode} />;
       case 'room-chat':
         return <RoomChatPage roomId={pageParams.roomId} onNavigate={handleNavigate} />;
       case 'quick-transfer':
-        return <QuickTransferPage />;
+        return <QuickTransferPage initialCode={pageParams?.code} />;
       case 'files':
         return <FilesPage roomId={pageParams.roomId} />;
       case 'devices':

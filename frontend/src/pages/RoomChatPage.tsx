@@ -14,7 +14,7 @@ import {
   Lock,
   Clock
 } from 'lucide-react';
-import { api } from '../services/api';
+import { api, getApiBaseUrl } from '../services/api';
 import { wsManager } from '../services/ws';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -57,10 +57,20 @@ export const RoomChatPage: React.FC<RoomChatPageProps> = ({ roomId, onNavigate }
   const [clipboardItems, setClipboardItems] = useState<ClipboardItem[]>([]);
 
   const messageListEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const isNearBottomRef = useRef(true);
   const isOwner = user && room && (room.owner_id === user.id || room.ownerId === user.id);
 
-  const scrollToBottom = () => {
-    messageListEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const target = e.currentTarget;
+    const distanceToBottom = target.scrollHeight - target.scrollTop - target.clientHeight;
+    isNearBottomRef.current = distanceToBottom < 120;
+  };
+
+  const scrollToBottom = (force = false) => {
+    if (force || isNearBottomRef.current) {
+      messageListEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   const loadRoomData = useCallback(async () => {
@@ -77,8 +87,12 @@ export const RoomChatPage: React.FC<RoomChatPageProps> = ({ roomId, onNavigate }
       const clipRes = await api.getClipboard(roomId);
       setClipboardItems(clipRes.items || []);
 
-      // Generate Room QR code
-      const qrUrl = await QRCode.toDataURL(roomRes.room.code, {
+      // Generate Room QR code with full join link including server URL
+      const origin = window.location.origin;
+      const pathname = window.location.pathname;
+      const server = getApiBaseUrl();
+      const shareUrl = `${origin}${pathname}?room=${roomRes.room.code}&server=${encodeURIComponent(server)}`;
+      const qrUrl = await QRCode.toDataURL(shareUrl, {
         width: 250,
         margin: 2
       });
@@ -102,7 +116,7 @@ export const RoomChatPage: React.FC<RoomChatPageProps> = ({ roomId, onNavigate }
       if (payload.is_pinned) {
         setPinnedMessages((prev) => [...prev, payload]);
       }
-      setTimeout(scrollToBottom, 100);
+      setTimeout(() => scrollToBottom(false), 100);
     });
 
     const unEdit = wsManager.on('MESSAGE_EDITED', (payload: any) => {
@@ -264,7 +278,7 @@ export const RoomChatPage: React.FC<RoomChatPageProps> = ({ roomId, onNavigate }
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden animate-in fade-in duration-150">
+    <div className="flex flex-col h-[calc(100dvh-9.5rem)] lg:h-[calc(100vh-8rem)] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden animate-fade-in">
       {/* Header */}
       <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3 bg-white/80 dark:bg-slate-900/80 backdrop-blur shrink-0">
         <div className="flex items-center gap-3 min-w-0">
@@ -355,7 +369,7 @@ export const RoomChatPage: React.FC<RoomChatPageProps> = ({ roomId, onNavigate }
       />
 
       {/* Messages Scroll Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-2">
+      <div ref={scrollContainerRef} onScroll={handleScroll} className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-2 min-h-0">
         {messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center text-slate-400 p-8">
             <KeyRound className="w-12 h-12 text-slate-300 dark:text-slate-700 mb-2" />

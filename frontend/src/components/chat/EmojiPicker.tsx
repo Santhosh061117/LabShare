@@ -12,7 +12,7 @@ interface EmojiPickerProps {
 
 export const EmojiPicker: React.FC<EmojiPickerProps> = ({ onSelect, onClose }) => {
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl p-2.5 z-40 animate-in fade-in zoom-in-95 duration-150">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl p-2.5 z-50 animate-zoom-in max-w-[calc(100vw-2.5rem)] sm:max-w-none overflow-x-auto">
       <div className="grid grid-cols-8 gap-1.5">
         {COMMON_EMOJIS.map((emoji) => (
           <button

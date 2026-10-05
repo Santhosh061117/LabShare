@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import QRCode from 'qrcode';
 import { Modal } from '../common/Modal';
 import { Button } from '../common/Button';
 import { useServer } from '../../context/ServerContext';
 import { useToast } from '../../context/ToastContext';
-import { Globe, RefreshCw, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Globe, RefreshCw, CheckCircle2, AlertCircle, QrCode, Copy, Check, AlertTriangle } from 'lucide-react';
 
 interface ServerSettingsModalProps {
   isOpen: boolean;
@@ -16,6 +17,29 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen
   const [urlInput, setUrlInput] = useState(backendUrl);
   const [isTesting, setIsTesting] = useState(false);
   const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
+  const [showShareQr, setShowShareQr] = useState(false);
+  const [shareQrDataUrl, setShareQrDataUrl] = useState<string | null>(null);
+  const [copiedLink, setCopiedLink] = useState(false);
+
+  // Sync urlInput when backendUrl changes
+  useEffect(() => {
+    setUrlInput(backendUrl);
+  }, [backendUrl]);
+
+  // Generate Connect QR code
+  useEffect(() => {
+    if (showShareQr && typeof window !== 'undefined') {
+      const shareUrl = `${window.location.origin}${window.location.pathname}?server=${encodeURIComponent(backendUrl)}`;
+      QRCode.toDataURL(shareUrl, { width: 220, margin: 2 })
+        .then((url) => setShareQrDataUrl(url))
+        .catch(() => {});
+    }
+  }, [showShareQr, backendUrl]);
+
+  const isHttpsFrontend = typeof window !== 'undefined' && window.location.protocol === 'https:';
+  const isHttpBackend = urlInput.trim().toLowerCase().startsWith('http://') &&
+    !urlInput.trim().toLowerCase().startsWith('http://localhost') &&
+    !urlInput.trim().toLowerCase().startsWith('http://127.0.0.1');
 
   const handleTestAndSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,6 +69,15 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen
     }
   };
 
+  const handleCopyShareLink = () => {
+    if (typeof window === 'undefined') return;
+    const shareUrl = `${window.location.origin}${window.location.pathname}?server=${encodeURIComponent(backendUrl)}`;
+    navigator.clipboard.writeText(shareUrl);
+    setCopiedLink(true);
+    success('Shareable connect link copied!');
+    setTimeout(() => setCopiedLink(false), 2000);
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Backend Server Connection">
       <form onSubmit={handleTestAndSave} className="space-y-4">
@@ -64,9 +97,31 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen
               className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
             />
           </div>
-          <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
-            For college labs: Set this to your stable Cloudflare Named Tunnel URL or local Wi-Fi IP address.
-          </p>
+
+          {/* Mixed Content Warning */}
+          {isHttpsFrontend && isHttpBackend && (
+            <div className="mt-2.5 p-2.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-300/80 dark:border-amber-800/60 rounded-xl text-xs text-amber-800 dark:text-amber-300 flex items-start gap-2">
+              <AlertTriangle className="w-4 h-4 shrink-0 text-amber-600 mt-0.5" />
+              <div>
+                <p className="font-semibold">Mixed Content Warning:</p>
+                <p>
+                  You are viewing LabShare over <strong>HTTPS</strong>. Browsers block insecure <code>http://</code> URLs. For mobile phones and other devices, use your Cloudflare <strong>HTTPS Named Tunnel</strong> (e.g. <code>https://lab.yourdomain.com</code>).
+                </p>
+              </div>
+            </div>
+          )}
+
+          <div className="mt-2 p-2.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700/80 text-xs text-slate-500 dark:text-slate-400 space-y-1">
+            <p className="font-semibold text-slate-700 dark:text-slate-300">
+              💡 Connecting from another device (Phone / Laptop)?
+            </p>
+            <p>
+              • <code>localhost</code> only points to the host device itself.
+            </p>
+            <p>
+              • For other devices, enter your Cloudflare HTTPS Tunnel URL (e.g. <code>https://lab.yourdomain.com</code>).
+            </p>
+          </div>
         </div>
 
         {testResult && (
@@ -88,6 +143,44 @@ export const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen
                 <p className="text-[11px] opacity-80 mt-0.5">Latency: {pingMs}ms</p>
               )}
             </div>
+          </div>
+        )}
+
+        {/* Share with Other Devices Section */}
+        {isOnline && (
+          <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+            <button
+              type="button"
+              onClick={() => setShowShareQr(!showShareQr)}
+              className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1.5 font-medium"
+            >
+              <QrCode className="w-3.5 h-3.5" />
+              {showShareQr ? 'Hide Server Connect QR' : 'Show Connect QR / Link for Other Phones'}
+            </button>
+
+            {showShareQr && (
+              <div className="mt-3 p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 text-center space-y-2">
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Scan this QR code with any phone camera to instantly connect that phone to your Termux backend:
+                </p>
+                {shareQrDataUrl && (
+                  <div className="inline-block p-3 bg-white rounded-xl shadow-sm border border-slate-200">
+                    <img src={shareQrDataUrl} alt="Connect QR" className="w-44 h-44 mx-auto" />
+                  </div>
+                )}
+                <div>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={handleCopyShareLink}
+                    icon={copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                  >
+                    {copiedLink ? 'Link Copied!' : 'Copy Shareable Connect Link'}
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

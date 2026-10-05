@@ -121,7 +121,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
             <Smile className="w-5 h-5" />
           </button>
           {showEmojiPicker && (
-            <div className="absolute left-0 bottom-full mb-2">
+            <div className="absolute left-0 bottom-full mb-2 z-50">
               <EmojiPicker
                 onSelect={(emoji) => setText((prev) => prev + emoji)}
                 onClose={() => setShowEmojiPicker(false)}
@@ -137,7 +137,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           placeholder="Type a message... (Press Enter to send)"
-          className="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
 
         {/* Send Button */}

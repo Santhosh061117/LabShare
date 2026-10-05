@@ -23,17 +23,26 @@ import { JoinRoomModal } from '../components/rooms/JoinRoomModal';
 
 interface RoomsPageProps {
   onNavigate: (page: string, params?: any) => void;
+  initialJoinCode?: string;
 }
 
-export const RoomsPage: React.FC<RoomsPageProps> = ({ onNavigate }) => {
+export const RoomsPage: React.FC<RoomsPageProps> = ({ onNavigate, initialJoinCode }) => {
   const { user } = useAuth();
   const { success } = useToast();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [showCreate, setShowCreate] = useState(false);
-  const [showJoin, setShowJoin] = useState(false);
+  const [showJoin, setShowJoin] = useState(!!initialJoinCode);
+  const [joinCodeToUse, setJoinCodeToUse] = useState(initialJoinCode || '');
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (initialJoinCode) {
+      setJoinCodeToUse(initialJoinCode);
+      setShowJoin(true);
+    }
+  }, [initialJoinCode]);
 
   const fetchRooms = async () => {
     setLoading(true);
@@ -228,7 +237,11 @@ export const RoomsPage: React.FC<RoomsPageProps> = ({ onNavigate }) => {
       />
       <JoinRoomModal
         isOpen={showJoin}
-        onClose={() => setShowJoin(false)}
+        initialCode={joinCodeToUse}
+        onClose={() => {
+          setShowJoin(false);
+          setJoinCodeToUse('');
+        }}
         onRoomJoined={(r) => {
           fetchRooms();
           onNavigate('room-chat', { roomId: r.id });
